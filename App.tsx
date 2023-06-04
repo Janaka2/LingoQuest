@@ -1,41 +1,76 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView, View, Text, Button, StyleSheet, useColorScheme, FlatList } from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
-const DATA = [
-  { id: '1', german: 'Hallo', english: 'Hello' },
-  { id: '2', german: 'Danke', english: 'Thank you' },
-  { id: '3', german: 'Liebe', english: 'Love' },
-  // add more phrases here
-];
+import DATA from './data';
 
-const LanguageLearningApp = () => {
+type DataType = {
+  id: string;
+  german: string;
+  english: string;
+};
+
+type ItemProps = {
+  item: DataType;
+  increment: () => void;
+  decrement: () => void;
+};
+
+const Item = ({ item, increment, decrement }: ItemProps) => (
+  <View style={styles.item}>
+    <Text style={styles.title}>{item.german}</Text>
+    <Text>{item.english}</Text>
+    <Button onPress={increment} title="Correct" />
+    <Button onPress={decrement} title="Wrong" />
+  </View>
+);
+
+const Header = ({ points, resetPoints }: { points: number; resetPoints: () => void }) => (
+  <View style={styles.header}>
+    <Text style={styles.headerText}>You have {points} points</Text>
+    <Button onPress={resetPoints} title="Reset Points" />
+  </View>
+);
+
+const LingoQuest = () => {
   const [points, setPoints] = useState(0);
 
-  const handleLearnWord = () => {
-    // In a real app, you'd also want to update the user's points on the server
+  const handleCorrect = () => {
     setPoints(points + 10);
   };
 
+  const handleWrong = () => {
+    setPoints(points - 10);
+  };
+
+  const resetPoints = () => {
+    setPoints(0);
+  };
+
+  const renderItem = ({ item }: { item: DataType }) => (
+    <Item item={item} increment={handleCorrect} decrement={handleWrong} />
+  );
+
+  const isDarkMode = useColorScheme() === 'dark';
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+
   return (
-    <View style={styles.container}>
-      {DATA.map((item) => (
-        <TouchableOpacity 
-          key={item.id} 
-          style={styles.item} 
-          onPress={handleLearnWord}
-        >
-          <Text style={styles.title}>{item.german}</Text>
-          <Text>{item.english}</Text>
-        </TouchableOpacity>
-      ))}
-      <Text>You have {points} points</Text>
-    </View>
+    <SafeAreaView style={backgroundStyle}>
+      <Header points={points} resetPoints={resetPoints} />
+      <FlatList
+        data={DATA}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.container}
+      />
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     marginTop: 20,
   },
   item: {
@@ -45,8 +80,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   title: {
-    fontSize: 32,
+    fontSize: 22,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
+  },
+  headerText: {
+    fontSize: 20,
   },
 });
 
-export default LanguageLearningApp;
+export default LingoQuest;
