@@ -19,16 +19,18 @@ type ItemProps = {
 const Item = ({ item, increment, decrement }: ItemProps) => (
   <View style={styles.item}>
     <Text style={styles.title}>{item.german}</Text>
-    <Text>{item.english}</Text>
-    <Button onPress={increment} title="Correct" />
-    <Button onPress={decrement} title="Wrong" />
+    <Text style={styles.subtitle}>{item.english}</Text>
+    <View style={styles.buttonsContainer}>
+      <Button onPress={increment} title="Correct" color="#4CAF50" />
+      <Button onPress={decrement} title="Wrong" color="#F44336" />
+    </View>
   </View>
 );
 
 const Header = ({ points, resetPoints }: { points: number; resetPoints: () => void }) => (
   <View style={styles.header}>
-    <Text style={styles.headerText}>You have {points} points</Text>
-    <Button onPress={resetPoints} title="Reset Points" />
+    <Text style={styles.headerText}>Points: {points}</Text>
+    <Button onPress={resetPoints} title="Reset" color="#3F51B5" />
   </View>
 );
 
@@ -74,24 +76,40 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   item: {
-    backgroundColor: '#f9c2ff',
+    backgroundColor: '#E8EAF6',
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
+    borderRadius: 10,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
+    color: '#3F51B5',
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 20,
+    color: '#3F51B5',
+    marginBottom: 20,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
+    padding: 20,
     borderBottomWidth: 1,
     borderColor: '#ddd',
+    backgroundColor: '#3F51B5',
   },
   headerText: {
-    fontSize: 20,
+    fontSize: 24,
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
