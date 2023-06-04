@@ -14,18 +14,36 @@ type ItemProps = {
   item: DataType;
   increment: () => void;
   decrement: () => void;
+  done: boolean;
+  setDone: (id: string) => void;
 };
 
-const Item = ({ item, increment, decrement }: ItemProps) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{item.german}</Text>
-    <Text style={styles.subtitle}>{item.english}</Text>
-    <View style={styles.buttonsContainer}>
-      <Button onPress={increment} title="Correct" color="#4CAF50" />
-      <Button onPress={decrement} title="Wrong" color="#F44336" />
+const Item = ({ item, increment, decrement, done, setDone }: ItemProps) => {
+  const handleCorrect = () => {
+    increment();
+    setDone(item.id);
+  };
+
+  const handleWrong = () => {
+    decrement();
+    setDone(item.id);
+  };
+
+  if (done) {
+    return <View style={styles.doneItem}><Text style={styles.doneText}>Question {item.id} answered</Text></View>
+  }
+
+  return (
+    <View style={styles.item}>
+      <Text style={styles.title}>{item.german}</Text>
+      <Text style={styles.subtitle}>{item.english}</Text>
+      <View style={styles.buttonsContainer}>
+        <Button onPress={handleCorrect} title="Correct" color="#4CAF50" />
+        <Button onPress={handleWrong} title="Wrong" color="#F44336" />
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 const Header = ({ points, resetPoints }: { points: number; resetPoints: () => void }) => (
   <View style={styles.header}>
@@ -36,6 +54,7 @@ const Header = ({ points, resetPoints }: { points: number; resetPoints: () => vo
 
 const LingoQuest = () => {
   const [points, setPoints] = useState(0);
+  const [doneSet, setDoneSet] = useState(new Set<string>());
 
   const handleCorrect = () => {
     setPoints(points + 10);
@@ -45,12 +64,17 @@ const LingoQuest = () => {
     setPoints(points - 10);
   };
 
+  const handleDone = (id: string) => {
+    setDoneSet(new Set(doneSet.add(id)));
+  };
+
   const resetPoints = () => {
     setPoints(0);
+    setDoneSet(new Set<string>());
   };
 
   const renderItem = ({ item }: { item: DataType }) => (
-    <Item item={item} increment={handleCorrect} decrement={handleWrong} />
+    <Item item={item} increment={handleCorrect} decrement={handleWrong} done={doneSet.has(item.id)} setDone={handleDone} />
   );
 
   const isDarkMode = useColorScheme() === 'dark';
@@ -110,6 +134,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: 'white',
     fontWeight: 'bold',
+  },
+  doneItem: {
+    padding: 10,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    backgroundColor: '#C5CAE9',
+    borderRadius: 10,
+  },
+  doneText: {
+    fontSize: 16,
+    color: '#3F51B5',
   },
 });
 
